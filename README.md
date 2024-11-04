@@ -15,4 +15,4 @@ This repository contains a collection of projects related to web development. Ea
 
 ## About this Repository
 
-This repository serves as a portfolio of embedded systems projects, showcasing skills in Python programming and hardware interaction on platforms like the Raspberry Pi. Future additions may include projects focusing on IoT (Internet of Things), automation, and real-time systems.
+This repository serves as a portfolio of web development projects, showcasing skills in web development.
