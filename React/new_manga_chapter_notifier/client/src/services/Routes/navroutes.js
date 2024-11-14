@@ -1,13 +1,13 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Main from '../../pages/main/main';
-import AuthCallback from '..//AuthCallback/AuthCallback'
+import Callback from '..//AuthCallback/AuthCallback'
 
 function NavRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Main />} />
-      <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/auth/callback" element={<Callback />} />
     </Routes>
   );
 }
