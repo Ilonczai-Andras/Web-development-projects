@@ -1,0 +1,68 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+<div class="m-4">
+	<input type="text" @bind="text" @bind:event="oninput" @bind:after="HandleInputAfter"/>
+	<p>@text</p>
+</div>
+
+<p>@result</p>
+
+@* <div class="m-4"> *@
+@* 	<input type="text" @oninput = "HandleInput"/> *@
+@* 	<p>@text</p> *@
+@* </div> *@
+
+@* <div style="border: 1px solid black;" @onmouseover="MouseOver"> *@
+@* 	<p>@divText</p> *@
+@* </div> *@
+
+
+@code {
+	private int currentCount = 0;
+	string text = "";
+	string result = "";
+
+	string divText = "";
+
+	[Parameter]
+	public int IncrementAmount { get; set; } = 1;
+
+	private void IncrementCount()
+	{
+		currentCount+= IncrementAmount;
+	}
+	private void HandleInput(ChangeEventArgs args)
+	{
+		text = (string)args.Value!;
+	}
+	private void MouseOver(MouseEventArgs args)
+	{
+		divText="You are hovering over a div";
+	}
+	private void HandleKeyDown(KeyboardEventArgs args)
+	{
+		text = args.Key;
+	}
+	private void HandleFocus(FocusEventArgs args)
+	{
+		text = "You are typing...";
+	}
+	private void HandleBlur(FocusEventArgs args)
+	{
+		text = "You are not typing. You have clicked away";
+	}
+	async Task HandleInputAfter()
+	{
+		await Task.Delay(3000);
+		result = "150 results were found";
+	}
+}
