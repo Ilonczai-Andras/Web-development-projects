@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Panel1 from "./Panel1";
-import Panel2 from "./Panel2";
-import SubmitSection from "./SubmitSection";
+import Panel1 from "../Panels/Panel1";
+import Panel2 from "../Panels/Panel2";
+import SubmitSection from "../Panels/SubmitSection";
 
 const MainContent = () => {
   const [fileURL, setFileURL] = useState(null);
