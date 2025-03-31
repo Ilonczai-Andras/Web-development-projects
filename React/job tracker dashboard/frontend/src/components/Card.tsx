@@ -11,20 +11,18 @@ export const Card = ({ id, title }: CardProps) => {
         id,
     });
 
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
     return (
         <div
             ref={setNodeRef}
             {...attributes}
             {...listeners}
-            style={{
-                background: '#ffffff',
-                borderRadius: '12px',
-                padding: '0.75rem',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                transform: CSS.Transform.toString(transform),
-                transition,
-                cursor: 'grab',
-            }}
+            style={style}
+            className="bg-white rounded-xl p-3 shadow-md cursor-grab"
         >
             {title}
         </div>

@@ -6,17 +6,9 @@ export const Header = () => {
     const { user, isAuthenticated } = useAuth0();
 
     return (
-        <header style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '1rem 2rem',
-            background: '#111827',
-            color: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-            <h2 style={{ fontSize: '1.3rem' }}>Job Tracker Dashboard</h2>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <header className="flex justify-between items-center px-8 py-4 bg-gray-900 text-white shadow-md">
+            <h2 className="text-[1.3rem]">Job Tracker Dashboard</h2>
+            <div className="flex items-center gap-4">
                 {isAuthenticated && user && <span>👤 {user.name}</span>}
                 <LoginButton />
                 <LogoutButton />

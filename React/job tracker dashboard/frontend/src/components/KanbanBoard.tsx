@@ -1,5 +1,5 @@
 import { DndContext, DragEndEvent, DragOverlay } from "@dnd-kit/core";
-import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import { arrayMove } from "@dnd-kit/sortable";
 import { useState } from "react";
 import { Column } from "./Column";
 import { Card } from "./Card";
@@ -92,16 +92,7 @@ export const KanbanBoard = () => {
       onDragEnd={handleDragEnd}
       onDragCancel={() => setActiveCard(null)}
     >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-          gap: "1.5rem",
-          padding: "1rem",
-          height: "calc(100vh - 70px)",
-          background: "#f3f4f6",
-        }}
-      >
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6 p-4 h-[calc(100vh-70px)] bg-gray-100">
         <Column id="todo" title="To Do" cards={board.todo} />
         <Column id="inprogress" title="In Progress" cards={board.inprogress} />
         <Column id="interview" title="Interview" cards={board.interview} />

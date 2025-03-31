@@ -21,26 +21,12 @@ export const Column = ({ id, title, cards }: ColumnProps) => {
     return (
         <div
             ref={setNodeRef}
-            style={{
-                background: '#fefefe',
-                borderRadius: '16px',
-                padding: '1rem',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.75rem',
-                minHeight: '80vh',
-            }}
+            className="bg-[#fefefe] rounded-2xl p-4 shadow-md flex flex-col gap-3 min-h-[80vh]"
         >
-            <h3 style={{
-                fontSize: '1.2rem',
-                fontWeight: '600',
-                marginBottom: '0.5rem',
-                color: '#374151',
-            }}>{title}</h3>
+            <h3 className="text-[1.2rem] font-semibold mb-2 text-gray-700">{title}</h3>
 
             <SortableContext items={cards.map(c => c.id)} strategy={verticalListSortingStrategy}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div className="flex flex-col gap-2">
                     {cards.map(card => (
                         <Card key={card.id} id={card.id} title={card.title} />
                     ))}
