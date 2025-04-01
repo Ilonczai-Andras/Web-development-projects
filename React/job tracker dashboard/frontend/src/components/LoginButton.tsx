@@ -1,9 +1,15 @@
 import { useAuth0 } from "@auth0/auth0-react";
 
 const LoginButton = () => {
-    const { loginWithRedirect, isAuthenticated } = useAuth0();
+    const { loginWithRedirect, isAuthenticated, user } = useAuth0();
 
-    if (isAuthenticated) return null;
+    if (isAuthenticated) {
+        // Save user locally
+        if (user) {
+            localStorage.setItem("user", JSON.stringify(user));
+        }
+        return null;
+    }
 
     return (
         <button
