@@ -6,14 +6,6 @@ const Application = require('../models/Application');
 
 router.use(checkJwt);
 
-// Middleware to get or create profile from token
-router.use(async (req, res, next) => {
-    const auth0_id = req.auth.sub;
-    const { name, email, picture } = req.auth;
-    req.profile = await Profile.createProfile({ auth0_id, name, email, picture });
-    next();
-});
-
 // GET applications for profile
 router.get('/', async (req, res) => {
     const apps = await Application.getApplications(req.profile.id);
