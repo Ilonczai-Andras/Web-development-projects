@@ -11,7 +11,7 @@ const UserMenu = () => {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 bg-white text-gray-800 px-4 py-2 rounded-lg shadow hover:bg-gray-100 transition-colors"
+        className="h-10 px-4 flex items-center gap-2 bg-white text-gray-800 rounded-lg shadow hover:bg-gray-100 transition-colors"
       >
         {isAuthenticated && user ? (
           <>
