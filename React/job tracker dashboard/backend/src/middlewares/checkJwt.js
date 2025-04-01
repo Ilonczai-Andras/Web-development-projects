@@ -1,7 +1,7 @@
-const { expressjwt: jwt } = require('express-jwt');
-const jwksRsa = require('jwks-rsa'); // Ezt tetted még nem be
+const { expressjwt } = require("express-jwt");
+const jwksRsa = require("jwks-rsa");
 
-const checkJwt = jwt({
+const checkJwt = expressjwt({
     secret: jwksRsa.expressJwtSecret({
         jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
         cache: true,
@@ -10,7 +10,7 @@ const checkJwt = jwt({
     }),
     audience: process.env.AUTH0_AUDIENCE,
     issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-    algorithms: ['RS256']
+    algorithms: ["RS256"]
 });
 
 module.exports = checkJwt;
