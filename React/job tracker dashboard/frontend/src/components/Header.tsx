@@ -1,13 +1,20 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import ApplicationModal from "./Modal/ApplicationModal";
 import UserMenu from "./UserMenu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Header = () => {
-    const { isAuthenticated } = useAuth0();
+    const { isAuthenticated,getAccessTokenSilently } = useAuth0();
     const [modalOpen, setModalOpen] = useState(false);
 
+    useEffect(() => {
+        if (!isAuthenticated) return;
     
+        getAccessTokenSilently()
+            .then(token => console.log("Token: ", token))
+            .catch(err => console.error("Token hiba:", err));
+    
+    }, [isAuthenticated]);
 
     return (
         <header className="flex justify-between items-center px-8 py-4 bg-gray-900 text-white shadow-md">

@@ -5,42 +5,53 @@ const useCreateOrUpdateProfile = () => {
     const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
     useEffect(() => {
-        if (!isAuthenticated) return; // Only run if user is authenticated
+        if (!isAuthenticated || !user) return;
 
-        const createOrUpdateProfile = async () => {
+        const syncProfile = async () => {
             try {
                 const token = await getAccessTokenSilently();
-                console.log(user?.email);
 
-                // Check if user data exists (e.g., name, email, picture)
-                if (user) {
-                    // Send the JWT and user info to the backend
-                    const response = await fetch('http://localhost:5000/api/profiles', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            name: user.name,
-                            email: user.email,
-                            picture: user.picture,
-                        }),
-                    });
+                // 1. Get existing profile
+                const res = await fetch('http://localhost:5000/api/profiles', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
-                    if (!response.ok) {
-                        throw new Error('Failed to create/update profile');
+                if (res.status === 404) {
+                    // 2. Create profile if not found
+                    console.log("[Profile] No profile found. Creating...");
+                    await createOrUpdate(token);
+                } else if (res.ok) {
+                    const existing = await res.json();
+
+                    // 3. Check if data differs
+                    if (existing.name !== user.name || existing.email !== user.email || existing.picture !== user.picture) {
+                        console.log("[Profile] Differences detected. Updating...");
+                        await createOrUpdate(token);
+                    } else {
+                        console.log("[Profile] Profile is up to date.");
                     }
-
-                    const profile = await response.json();
-                    console.log('Profile created/updated:', profile);
                 }
             } catch (err) {
-                console.error('Error creating/updating profile:', err);
+                console.error("Profile sync error:", err);
             }
         };
 
-        createOrUpdateProfile(); // Call the function to create or update the profile
+        const createOrUpdate = async (token: string) => {
+            await fetch('http://localhost:5000/api/profiles', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: user.name,
+                    email: user.email,
+                    picture: user.picture
+                })
+            });
+        };
+
+        syncProfile();
     }, [isAuthenticated, user, getAccessTokenSilently]);
 };
 
