@@ -1,49 +1,57 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import { DndContext, DragEndEvent, DragOverlay } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Column } from "./Column";
-import { Card } from "./Card";
-import { todo, inprogress, interview, done } from "../data/demoBoard";
-import { useAuth0 } from "@auth0/auth0-react";
+import { Card } from "./Card/Card";
+import { useGetApplications, Application } from "../hooks/useGetApplications";
 
 type ColumnId = "todo" | "inprogress" | "interview" | "done";
 
-type CardType = {
-  id: string;
-  title: string;
-};
-
 type BoardState = {
-  [key in ColumnId]: CardType[];
+  [key in ColumnId]: Application[];
 };
 
-const initialBoard: BoardState = {
-  todo: todo[0].cards,
-  inprogress: inprogress[0].cards,
-  interview: interview[0].cards,
-  done: done[0].cards,
+const emptyBoard: BoardState = {
+  todo: [],
+  inprogress: [],
+  interview: [],
+  done: [],
 };
 
 export const KanbanBoard = () => {
   const { isAuthenticated } = useAuth0();
-  const [board, setBoard] = useState<BoardState>(initialBoard);
-  const [activeCard, setActiveCard] = useState<CardType | null>(null);
+  const { applications, loading, error } = useGetApplications();
 
-  if (!isAuthenticated) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-70px)] bg-gray-100">
-        <p className="text-gray-800 text-2xl font-semibold">
-          Please sign in to view your job applications board.
-        </p>
-      </div>
-    );
-  }
+  const [board, setBoard] = useState<BoardState>(emptyBoard);
+  const [activeCard, setActiveCard] = useState<Application | null>(null);
+
+  useEffect(() => {
+    const grouped: BoardState = {
+      todo: [],
+      inprogress: [],
+      interview: [],
+      done: [],
+    };
+
+    applications.forEach((app) => {
+      if (grouped[app.status]) {
+        grouped[app.status as ColumnId].push(app);
+      }
+    });
+
+    setBoard(grouped);
+  }, [applications]);
+
+  if (!isAuthenticated) return <p>Please log in to see your board.</p>;
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   const handleDragStart = (event: any) => {
-    const activeId = event.active.id as string;
+    const activeId = event.active.id;
     const found = Object.values(board)
       .flat()
-      .find((c) => c.id === activeId);
+      .find((c) => c.id.toString() === activeId);
     if (found) setActiveCard(found);
   };
 
@@ -51,11 +59,11 @@ export const KanbanBoard = () => {
     const { active, over } = event;
     if (!over) return;
 
-    const activeId = active.id as string;
-    const overId = over.id as string;
+    const activeId = active.id;
+    const overId = over.id;
 
     const sourceColumn = (Object.keys(board) as ColumnId[]).find((columnId) =>
-      board[columnId].some((card) => card.id === activeId)
+      board[columnId].some((card) => card.id.toString() === activeId)
     );
 
     if (!sourceColumn) return;
@@ -66,18 +74,21 @@ export const KanbanBoard = () => {
       destinationColumn = overId as ColumnId;
     } else {
       destinationColumn = (Object.keys(board) as ColumnId[]).find((columnId) =>
-        board[columnId].some((card) => card.id === overId)
+        board[columnId].some((card) => card.id.toString() === overId)
       );
     }
 
-    if (destinationColumn === undefined) return;
+    if (!destinationColumn) return;
 
     const dest = destinationColumn as ColumnId;
 
-    // In-column reorder
-    if (sourceColumn === dest) {
-      const oldIndex = board[sourceColumn].findIndex((c) => c.id === activeId);
-      const newIndex = board[dest].findIndex((c) => c.id === overId);
+    if (sourceColumn === destinationColumn) {
+      const oldIndex = board[sourceColumn].findIndex(
+        (c) => c.id.toString() === activeId
+      );
+      const newIndex = board[destinationColumn].findIndex(
+        (c) => c.id.toString() === overId
+      );
       if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
         setBoard((prev) => ({
           ...prev,
@@ -87,13 +98,16 @@ export const KanbanBoard = () => {
       return;
     }
 
-    // Cross-column move
-    const cardToMove = board[sourceColumn].find((card) => card.id === activeId);
+    const cardToMove = board[sourceColumn].find(
+      (card) => card.id.toString() === activeId
+    );
     if (!cardToMove) return;
 
     setBoard((prev) => ({
       ...prev,
-      [sourceColumn]: prev[sourceColumn].filter((card) => card.id !== activeId),
+      [sourceColumn]: prev[sourceColumn].filter(
+        (card) => card.id.toString() !== activeId
+      ),
       [dest]: [...prev[dest], cardToMove],
     }));
   };
@@ -111,11 +125,7 @@ export const KanbanBoard = () => {
         <Column id="done" title="Done" cards={board.done} />
       </div>
 
-      <DragOverlay>
-        {activeCard ? (
-          <Card id={activeCard.id} title={activeCard.title} />
-        ) : null}
-      </DragOverlay>
+      <DragOverlay>{activeCard && <Card {...activeCard} />}</DragOverlay>
     </DndContext>
   );
 };
