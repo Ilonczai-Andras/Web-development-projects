@@ -1,5 +1,6 @@
 import Modal from "./Modal";
 import { useState } from "react";
+import useCreateApplication, { ApplicationData } from "..//../hooks/useCreateApplication";
 
 interface ApplicationModalProps {
   isOpen: boolean;
@@ -7,14 +8,16 @@ interface ApplicationModalProps {
 }
 
 const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ApplicationData>({
     title: "",
     description: "",
     company: "",
     status: "todo",
     link: "",
     deadline: "",
-  });
+});
+
+  const createApplication = useCreateApplication();
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -27,11 +30,16 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Application to save:", formData);
-    // TODO: API POST call will be placed here
-    onClose();
+    try {
+      await createApplication(formData);
+      alert("Application saved successfully!");
+      onClose();
+    } catch (err) {
+      alert("Error saving application");
+      console.error(err);
+    }
   };
 
   return (
