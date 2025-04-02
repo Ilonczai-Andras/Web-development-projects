@@ -4,7 +4,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { useState, useEffect } from "react";
 import { Column } from "./Column";
 import { Card } from "./Card/Card";
-import { useGetApplications, Application } from "../hooks/useGetApplications";
+import { Application, useApplications } from "../hooks/useGetApplications";
 
 type ColumnId = "todo" | "inprogress" | "interview" | "done";
 
@@ -21,7 +21,7 @@ const emptyBoard: BoardState = {
 
 export const KanbanBoard = () => {
   const { isAuthenticated } = useAuth0();
-  const { applications, loading, error } = useGetApplications();
+  const { data: applications = [], isLoading, error } = useApplications();
 
   const [board, setBoard] = useState<BoardState>(emptyBoard);
   const [activeCard, setActiveCard] = useState<Application | null>(null);
@@ -44,8 +44,8 @@ export const KanbanBoard = () => {
   }, [applications]);
 
   if (!isAuthenticated) return <p>Please log in to see your board.</p>;
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error</p>;
 
   const handleDragStart = (event: any) => {
     const activeId = event.active.id;
@@ -55,33 +55,63 @@ export const KanbanBoard = () => {
     if (found) setActiveCard(found);
   };
 
+  // Helper to find the column of a given card by ID
+  const findColumnByCardId = (
+    board: BoardState,
+    cardId: string
+  ): ColumnId | undefined => {
+    return (Object.keys(board) as ColumnId[]).find((columnId) =>
+      board[columnId].some((card) => card.id.toString() === cardId)
+    );
+  };
+
+  // Helper to move card within the same column (reordering)
+  const moveCardWithinColumn = (
+    column: Application[],
+    fromIndex: number,
+    toIndex: number
+  ): Application[] => {
+    return arrayMove(column, fromIndex, toIndex);
+  };
+
+  // Helper to move card between two columns
+  const moveCardBetweenColumns = (
+    board: BoardState,
+    source: ColumnId,
+    destination: ColumnId,
+    card: Application
+  ): BoardState => {
+    return {
+      ...board,
+      [source]: board[source].filter((c) => c.id !== card.id),
+      [destination]: [...board[destination], card],
+    };
+  };
+
+  // The main drag end handler
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
 
-    const activeId = active.id;
-    const overId = over.id;
+    const activeId = active.id.toString();
+    const overId = over.id.toString();
 
-    const sourceColumn = (Object.keys(board) as ColumnId[]).find((columnId) =>
-      board[columnId].some((card) => card.id.toString() === activeId)
-    );
-
+    const sourceColumn = findColumnByCardId(board, activeId);
     if (!sourceColumn) return;
 
     let destinationColumn: ColumnId | undefined;
 
+    // If dropped on a column directly
     if ((Object.keys(board) as ColumnId[]).includes(overId as ColumnId)) {
       destinationColumn = overId as ColumnId;
     } else {
-      destinationColumn = (Object.keys(board) as ColumnId[]).find((columnId) =>
-        board[columnId].some((card) => card.id.toString() === overId)
-      );
+      // If dropped on another card
+      destinationColumn = findColumnByCardId(board, overId);
     }
 
     if (!destinationColumn) return;
 
-    const dest = destinationColumn as ColumnId;
-
+    // 🟣 Case 1 - Reordering in the same column
     if (sourceColumn === destinationColumn) {
       const oldIndex = board[sourceColumn].findIndex(
         (c) => c.id.toString() === activeId
@@ -89,27 +119,29 @@ export const KanbanBoard = () => {
       const newIndex = board[destinationColumn].findIndex(
         (c) => c.id.toString() === overId
       );
+
       if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
         setBoard((prev) => ({
           ...prev,
-          [sourceColumn]: arrayMove(prev[sourceColumn], oldIndex, newIndex),
+          [sourceColumn]: moveCardWithinColumn(
+            prev[sourceColumn],
+            oldIndex,
+            newIndex
+          ),
         }));
       }
       return;
     }
 
+    // 🟣 Case 2 - Moving to another column
     const cardToMove = board[sourceColumn].find(
       (card) => card.id.toString() === activeId
     );
     if (!cardToMove) return;
 
-    setBoard((prev) => ({
-      ...prev,
-      [sourceColumn]: prev[sourceColumn].filter(
-        (card) => card.id.toString() !== activeId
-      ),
-      [dest]: [...prev[dest], cardToMove],
-    }));
+    setBoard((prev) =>
+      moveCardBetweenColumns(prev, sourceColumn, destinationColumn!, cardToMove)
+    );
   };
 
   return (
