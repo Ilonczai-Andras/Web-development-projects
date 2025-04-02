@@ -24,13 +24,14 @@ router.use(async (req, res, next) => {
 // GET applications for profile
 router.get('/', async (req, res) => {
     const apps = await Application.getApplications(req.profile.id);
+    console.log(`[GET] Application returned for profile ID ${req.profile.id}`);
     res.json(apps);
 });
 
 // POST new application for profile
 router.post('/', async (req, res) => {
     const app = await Application.createApplication(req.profile.id, req.body);
-    console.log(`[APP] New application created: ${app.title} for profile ID ${req.profile.id}`);
+    console.log(`[Post] New application created: ${app.title} for profile ID ${req.profile.id}`);
     res.json(app);
 });
 
