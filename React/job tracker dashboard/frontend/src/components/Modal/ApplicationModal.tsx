@@ -1,6 +1,9 @@
 import Modal from "./Modal";
 import { useState } from "react";
-import useCreateApplication, { ApplicationData } from "..//../hooks/useCreateApplication";
+import useCreateApplication, {
+  ApplicationData,
+} from "..//../hooks/useCreateApplication";
+import { useApplications } from "../../hooks/useGetApplications";
 
 interface ApplicationModalProps {
   isOpen: boolean;
@@ -15,7 +18,8 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
     status: "todo",
     link: "",
     deadline: "",
-});
+  });
+  const { refetch } = useApplications();
 
   const createApplication = useCreateApplication();
 
@@ -34,6 +38,7 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
     e.preventDefault();
     try {
       await createApplication(formData);
+      refetch();
       alert("Application saved successfully!");
       onClose();
     } catch (err) {

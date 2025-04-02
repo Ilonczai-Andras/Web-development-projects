@@ -6,25 +6,28 @@ import reportWebVitals from "./reportWebVitals";
 import { Auth0Provider } from "@auth0/auth0-react";
 
 import { AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_AUDIENCE } from "./env";
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+const queryClient = new QueryClient();
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
 root.render(
   <React.StrictMode>
-    <Auth0Provider
-      domain={AUTH0_DOMAIN}
-      clientId={AUTH0_CLIENT_ID}
-      authorizationParams={{
-        redirect_uri: window.location.origin,
-        audience: AUTH0_AUDIENCE,
-        scope: 'openid profile email'
-      }}
-      cacheLocation="localstorage"
-    >
-      <App />
-    </Auth0Provider>
+    <QueryClientProvider client={queryClient}>
+      <Auth0Provider
+        domain={AUTH0_DOMAIN}
+        clientId={AUTH0_CLIENT_ID}
+        authorizationParams={{
+          redirect_uri: window.location.origin,
+          audience: AUTH0_AUDIENCE,
+          scope: "openid profile email",
+        }}
+        cacheLocation="localstorage"
+      >
+        <App />
+      </Auth0Provider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
 

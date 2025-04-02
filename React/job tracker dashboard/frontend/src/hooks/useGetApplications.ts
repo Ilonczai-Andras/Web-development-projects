@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect, useState } from "react";
+import { useQuery } from '@tanstack/react-query';
 
 // Types
 export interface Application {
@@ -14,45 +14,21 @@ export interface Application {
     updated_at: string;
 }
 
-export const useGetApplications = () => {
+export const useApplications = () => {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
-    const [applications, setApplications] = useState<Application[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (!isAuthenticated) return;
+    const query = useQuery({
+        queryKey: ['applications'],
+        enabled: isAuthenticated,
+        queryFn: async () => {
+            const token = await getAccessTokenSilently();
+            const response = await fetch("http://localhost:5000/api/applications", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error("Failed to fetch applications");
+            return await response.json() as Application[];
+        }
+    });
 
-        const fetchApplications = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const token = await getAccessTokenSilently();
-
-                const response = await fetch("http://localhost:5000/api/applications", {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error("Failed to fetch applications");
-                }
-
-                const data = await response.json();
-                setApplications(data);
-
-            } catch (err: any) {
-                setError(err.message);
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchApplications();
-    }, [isAuthenticated, getAccessTokenSilently]);
-
-    return { applications, loading, error };
-};
+    return query; // contains data, error, isLoading, refetch
+}
