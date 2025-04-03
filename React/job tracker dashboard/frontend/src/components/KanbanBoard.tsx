@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Column } from "./Column";
 import { Card } from "./Card/Card";
 import { Application, useApplications } from "../hooks/useGetApplications";
+import useUpdateApplication from "../hooks/useUpdateApplication";
 
 type ColumnId = "todo" | "inprogress" | "interview" | "done";
 
@@ -22,6 +23,7 @@ const emptyBoard: BoardState = {
 export const KanbanBoard = () => {
   const { isAuthenticated } = useAuth0();
   const { data: applications = [], isLoading, error } = useApplications();
+  const updateApplication = useUpdateApplication();
 
   const [board, setBoard] = useState<BoardState>(emptyBoard);
   const [activeCard, setActiveCard] = useState<Application | null>(null);
@@ -89,7 +91,7 @@ export const KanbanBoard = () => {
   };
 
   // The main drag end handler
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
 
@@ -101,11 +103,9 @@ export const KanbanBoard = () => {
 
     let destinationColumn: ColumnId | undefined;
 
-    // If dropped on a column directly
     if ((Object.keys(board) as ColumnId[]).includes(overId as ColumnId)) {
       destinationColumn = overId as ColumnId;
     } else {
-      // If dropped on another card
       destinationColumn = findColumnByCardId(board, overId);
     }
 
@@ -139,9 +139,30 @@ export const KanbanBoard = () => {
     );
     if (!cardToMove) return;
 
+    // ✅ Update the card status before moving
+    const updatedCard: Application = {
+      ...cardToMove,
+      status: destinationColumn,
+    };
+
+    // ✅ Optimistic UI update
     setBoard((prev) =>
-      moveCardBetweenColumns(prev, sourceColumn, destinationColumn!, cardToMove)
+      moveCardBetweenColumns(
+        prev,
+        sourceColumn,
+        destinationColumn!,
+        updatedCard
+      )
     );
+
+    // ✅ Save to backend
+    try {
+      await updateApplication(updatedCard);
+      console.log("Application updated successfully");
+    } catch (error) {
+      console.error("Failed to update application", error);
+      // Optional: rollback here if you want
+    }
   };
 
   return (
