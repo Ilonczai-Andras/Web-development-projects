@@ -29,6 +29,8 @@ export const KanbanBoard = () => {
   const [activeCard, setActiveCard] = useState<Application | null>(null);
 
   useEffect(() => {
+    if (!applications || applications.length === 0) return;
+
     const grouped: BoardState = {
       todo: [],
       inprogress: [],
@@ -92,6 +94,10 @@ export const KanbanBoard = () => {
 
   // The main drag end handler
   const handleDragEnd = async (event: DragEndEvent) => {
+    if (!isAuthenticated) {
+      console.warn("User is not logged in, skipping update.");
+      return;
+    }
     const { active, over } = event;
     if (!over) return;
 
