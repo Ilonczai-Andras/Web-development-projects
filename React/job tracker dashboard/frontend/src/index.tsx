@@ -24,6 +24,14 @@ root.render(
           scope: "openid profile email",
         }}
         cacheLocation="localstorage"
+        onRedirectCallback={(appState) => {
+          window.history.replaceState(
+            {},
+            document.title,
+            appState?.returnTo || "/"
+          );
+          window.location.reload();
+        }}
       >
         <App />
       </Auth0Provider>
