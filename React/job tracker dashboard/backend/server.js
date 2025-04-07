@@ -12,6 +12,7 @@ app.use(express.json());
 // Routes
 app.use('/api/applications', require('./src/routes/Application'));
 app.use('/api/profiles', require('./src/routes/Profile'));
+app.use('/api/reminders', require('./src/routes/Reminder'));
 
 // Log startup
 logger.info('API starting...');
