@@ -3,7 +3,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Application } from "../hooks/useGetApplications";
+import { Application } from "../hooks/Application/useGetApplications";
 import { SortableCard } from "./Card/SortableCard";
 
 interface ColumnProps {

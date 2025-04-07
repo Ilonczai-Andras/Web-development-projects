@@ -4,8 +4,11 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { useState, useEffect } from "react";
 import { Column } from "./Column";
 import { Card } from "./Card/Card";
-import { Application, useApplications } from "../hooks/useGetApplications";
-import useUpdateApplication from "../hooks/useUpdateApplication";
+import {
+  Application,
+  useApplications,
+} from "../hooks/Application/useGetApplications";
+import useUpdateApplication from "../hooks/Application/useUpdateApplication";
 import { Spinner } from "./Spinner";
 import { toast } from "react-hot-toast";
 

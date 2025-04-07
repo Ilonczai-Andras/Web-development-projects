@@ -2,7 +2,7 @@ import Modal from "./Modal";
 import { useState } from "react";
 import useCreateApplication, {
   ApplicationData,
-} from "..//../hooks/useCreateApplication";
+} from "../../hooks/Application/useCreateApplication";
 import { toast } from "react-hot-toast";
 
 interface ApplicationModalProps {

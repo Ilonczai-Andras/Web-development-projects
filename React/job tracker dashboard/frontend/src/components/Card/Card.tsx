@@ -1,4 +1,4 @@
-import { Application } from "../../hooks/useGetApplications";
+import { Application } from "../../hooks/Application/useGetApplications";
 
 export const Card = ({
   id,

@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Card } from "./Card";
-import { Application } from "../../hooks/useGetApplications";
+import { Application } from "../../hooks/Application/useGetApplications";
 
 interface Props {
   card: Application;
