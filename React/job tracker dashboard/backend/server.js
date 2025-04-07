@@ -17,8 +17,11 @@ app.use('/api/reminders', require('./src/routes/Reminder'));
 // Log startup
 logger.info('API starting...');
 
+
 // Error Handler
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`API running on port ${PORT}`));
+
+require('./src/utils/reminderJob');

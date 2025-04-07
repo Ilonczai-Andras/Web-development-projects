@@ -2,15 +2,17 @@ const { createLogger, format, transports, addColors } = require('winston');
 
 const customLevels = {
     levels: {
-        auth: 0,
-        db: 1,
-        api: 2,
-        error: 3,
-        warn: 4,
-        info: 5,
-        debug: 6,
+        cron: 0,
+        auth: 1,
+        db: 2,
+        api: 3,
+        error: 4,
+        warn: 5,
+        info: 6,
+        debug: 7,
     },
     colors: {
+        cron: 'yellow',
         auth: 'magenta',
         db: 'cyan',
         api: 'blue',
