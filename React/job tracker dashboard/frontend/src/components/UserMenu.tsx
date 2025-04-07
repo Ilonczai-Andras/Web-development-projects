@@ -1,11 +1,31 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+
+const LOCAL_STORAGE_KEY = "view-mode";
 
 const UserMenu = () => {
   const { user, isAuthenticated } = useAuth0();
   const [open, setOpen] = useState(false);
+  const location = useLocation();
+
+  const [viewMode, setViewMode] = useState(() => {
+    return localStorage.getItem(LOCAL_STORAGE_KEY) || "board";
+  });
+
+  // Update localStorage when location changes
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.includes("reminders")) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, "reminders");
+      setViewMode("reminders");
+    } else if (path.includes("board")) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, "board");
+      setViewMode("board");
+    }
+  }, [location]);
 
   return (
     <div className="relative">
@@ -38,10 +58,29 @@ const UserMenu = () => {
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10">
           <div className="flex flex-col p-2 space-y-2">
+            {viewMode === "board" && (
+              <Link
+                to="/reminders"
+                className="text-left hover:bg-gray-100 p-2 rounded transition-colors text-black"
+                onClick={() => setOpen(false)}
+              >
+                Emlékeztetők
+              </Link>
+            )}
+            {viewMode === "reminders" && (
+              <Link
+                to="/board"
+                className="text-left hover:bg-gray-100 p-2 rounded transition-colors text-black"
+                onClick={() => setOpen(false)}
+              >
+                Kanban board
+              </Link>
+            )}
+
+            <hr />
+
             <LoginButton />
             <LogoutButton />
-            {/* Place for future options */}
-            {/* <button className="text-left hover:bg-gray-100 p-2 rounded">Settings</button> */}
           </div>
         </div>
       )}

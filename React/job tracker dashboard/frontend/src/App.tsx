@@ -1,6 +1,7 @@
 import "./App.css";
 import { Header } from "./components/Header";
 import { KanbanBoard } from "./components/KanbanBoard";
+import ReminderView from "./components/Reminder/ReminderView";
 import { Spinner } from "./components/Spinner";
 import useCreateOrUpdateProfile from "./hooks/Profile/useCreateOrUpdateProfile";
 import { Toaster } from "react-hot-toast";
@@ -20,11 +21,17 @@ function App() {
     );
   }
 
+  const defaultRoute = localStorage.getItem("view-mode") || "board";
+
   return (
     <>
       <main className="column">
         <Header />
-        <KanbanBoard />
+        <Routes>
+          <Route path="/" element={<Navigate to={`/${defaultRoute}`} replace />} />
+          <Route path="/board" element={<KanbanBoard />} />
+          <Route path="/reminders" element={<ReminderView />} />
+        </Routes>
       </main>
       <Toaster position="top-center" />
     </>
