@@ -3,7 +3,7 @@ import { useState } from "react";
 import useCreateApplication, {
   ApplicationData,
 } from "..//../hooks/useCreateApplication";
-import { useApplications } from "../../hooks/useGetApplications";
+import { toast } from "react-hot-toast";
 
 interface ApplicationModalProps {
   isOpen: boolean;
@@ -19,7 +19,6 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
     link: "",
     deadline: "",
   });
-  const { refetch } = useApplications();
 
   const createApplication = useCreateApplication();
 
@@ -34,17 +33,18 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await createApplication(formData);
-      refetch();
-      alert("Application saved successfully!");
-      onClose();
-    } catch (err) {
-      alert("Error saving application");
-      console.error(err);
-    }
+
+    createApplication.mutate(formData, {
+      onSuccess: () => {
+        toast.success("Application successfully saved!");
+        onClose();
+      },
+      onError: (err) => {
+        toast.success("❌ An error occurred when saving your application.");
+      },
+    });
   };
 
   return (
@@ -113,10 +113,16 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          disabled={createApplication.isPending}
         >
-          Save Application
+          {createApplication.isPending ? "Mentés..." : "Save Application"}
         </button>
+        {createApplication.isError && (
+          <p className="text-red-600 mt-2 text-sm">
+            ⚠ Hiba történt a jelentkezés mentésekor. Próbáld újra!
+          </p>
+        )}
       </form>
     </Modal>
   );

@@ -1,11 +1,23 @@
 import "./App.css";
 import { Header } from "./components/Header";
 import { KanbanBoard } from "./components/KanbanBoard";
+import { Spinner } from "./components/Spinner";
 import useCreateOrUpdateProfile from "./hooks/useCreateOrUpdateProfile";
 import { Toaster } from "react-hot-toast";
 
 function App() {
-  useCreateOrUpdateProfile();
+  const mutation = useCreateOrUpdateProfile();
+
+  if (mutation.isPending) return <Spinner />;
+
+  if (mutation.isError) {
+    return (
+      <div className="text-red-600 text-center mt-4">
+        ⚠ Nem sikerült betölteni a profiladatokat.
+      </div>
+    );
+  }
+
   return (
     <>
       <main className="column">

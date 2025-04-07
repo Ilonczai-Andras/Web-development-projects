@@ -6,6 +6,8 @@ import { Column } from "./Column";
 import { Card } from "./Card/Card";
 import { Application, useApplications } from "../hooks/useGetApplications";
 import useUpdateApplication from "../hooks/useUpdateApplication";
+import { Spinner } from "./Spinner";
+import { toast } from "react-hot-toast";
 
 type ColumnId = "todo" | "inprogress" | "interview" | "done";
 
@@ -48,8 +50,13 @@ export const KanbanBoard = () => {
   }, [applications]);
 
   if (!isAuthenticated) return <p>Please log in to see your board.</p>;
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error</p>;
+  if (isLoading) return <Spinner />;
+  if (error)
+    return (
+      <div className="text-center text-red-600 py-4">
+        ⚠ Hiba történt az adatok betöltésekor. Kérlek próbáld újra később.
+      </div>
+    );
 
   const handleDragStart = (event: any) => {
     const activeId = event.active.id;
@@ -163,11 +170,11 @@ export const KanbanBoard = () => {
 
     // ✅ Save to backend
     try {
-      await updateApplication(updatedCard);
-      console.log("Application updated successfully");
+      await updateApplication.mutateAsync(updatedCard);
+      toast.success("Application succesfully updated!");
     } catch (error) {
       console.error("Failed to update application", error);
-      // Optional: rollback here if you want
+      toast.error("Failed to update application");
     }
   };
 

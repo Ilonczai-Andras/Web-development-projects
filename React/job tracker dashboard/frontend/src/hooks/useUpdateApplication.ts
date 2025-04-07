@@ -1,36 +1,37 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Application } from "../hooks/useGetApplications";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Application } from "./useGetApplications";
 
-export const useUpdateApplication = () => {
-    const { getAccessTokenSilently } = useAuth0();
+const useUpdateApplication = () => {
+  const { getAccessTokenSilently } = useAuth0();
+  const queryClient = useQueryClient();
 
-    const updateApplication = async (application: Application) => {
-        try {
-            const token = await getAccessTokenSilently();
+  return useMutation({
+    mutationFn: async (application: Application) => {
+      const token = await getAccessTokenSilently();
 
-            const response = await fetch(`http://localhost:5000/api/applications/${application.id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-                body: JSON.stringify(application),
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to update application");
-            }
-
-            const result = await response.json();
-            console.log("[API] Application updated:", result);
-            return result;
-        } catch (error) {
-            console.error("[API] Error updating application:", error);
-            throw error;
+      const res = await fetch(
+        `http://localhost:5000/api/applications/${application.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(application),
         }
-    };
+      );
 
-    return updateApplication;
+      if (!res.ok) {
+        throw new Error("Failed to update application");
+      }
+
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    },
+  });
 };
 
 export default useUpdateApplication;
