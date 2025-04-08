@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import "./App.css";
 import { Header } from "./components/Header";
 import { KanbanBoard } from "./components/KanbanBoard";
@@ -11,12 +12,14 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 function App() {
   const mutation = useCreateOrUpdateProfile();
 
-  if (mutation.isPending) return <Spinner />;
+  const { isLoading: isAuthLoading } = useAuth0();
+
+  if (mutation.isPending || isAuthLoading) return <Spinner />;
 
   if (mutation.isError) {
     return (
       <div className="text-red-600 text-center mt-4">
-        ⚠ Nem sikerült betölteni a profiladatokat.
+        ⚠ Failed to load profile information.
       </div>
     );
   }
