@@ -7,7 +7,7 @@ export interface Reminder {
   title: string;
   description?: string;
   remind_at: string;
-  is_sent: string;
+  is_sent: boolean;
 }
 
 const fetchReminders = async (token: string): Promise<Reminder[]> => {

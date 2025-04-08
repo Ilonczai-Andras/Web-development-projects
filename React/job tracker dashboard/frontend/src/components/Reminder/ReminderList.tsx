@@ -1,8 +1,15 @@
+import { useState } from "react";
 import { useReminders } from "../../hooks/Reminder/useGetReminders";
+import ReminderModal from "../Modal/Reminder/ReminderModal";
 import { Spinner } from "../Spinner";
+import { Reminder } from "../../hooks/Reminder/useGetReminders";
 
 const ReminderList = () => {
   const { data: reminders = [], isLoading, error } = useReminders();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(
+    null
+  );
 
   if (isLoading) return <Spinner />;
   if (error)
@@ -12,6 +19,11 @@ const ReminderList = () => {
       </div>
     );
 
+  const openModal = (reminder: Reminder) => {
+    setSelectedReminder(reminder);
+    setModalOpen(true);
+  };
+
   return (
     <div>
       {reminders.map((reminder) => (
@@ -20,7 +32,9 @@ const ReminderList = () => {
           className="border rounded p-4 mb-2 flex justify-between items-start bg-gray-900"
         >
           <div>
-            <h3 className="text-lg font-semibold text-white">{reminder.title}</h3>
+            <h3 className="text-lg font-semibold text-white">
+              {reminder.title}
+            </h3>
             <p className="text-white">{reminder.description}</p>
             <p className="text-sm text-white">
               Reminder date: {new Date(reminder.remind_at).toLocaleString()}
@@ -30,12 +44,20 @@ const ReminderList = () => {
             <button className="m-1 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
               Delete
             </button>
-            <button className="m-1 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+            <button
+              onClick={() => openModal(reminder)}
+              className="m-1 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+            >
               Update
             </button>
           </div>
         </div>
       ))}
+      <ReminderModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        reminder={selectedReminder}
+      />
     </div>
   );
 };

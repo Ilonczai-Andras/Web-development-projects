@@ -120,7 +120,7 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
         </button>
         {createApplication.isError && (
           <p className="text-red-600 mt-2 text-sm">
-            ⚠ Hiba történt a jelentkezés mentésekor. Próbáld újra!
+            ⚠ An error occurred when saving your application. Try again!
           </p>
         )}
       </form>

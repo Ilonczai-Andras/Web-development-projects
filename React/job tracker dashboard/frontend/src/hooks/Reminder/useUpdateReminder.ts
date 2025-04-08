@@ -1,40 +1,37 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Reminder } from "./useGetReminders";
+import { useAuth0 } from '@auth0/auth0-react';
 
-interface ReminderUpdate {
-  title?: string;
-  description?: string;
-  reminder_date?: Date;
-}
-
-const updateReminder = async ({
-  id,
-  data,
-}: {
-  id: number;
-  data: ReminderUpdate;
-}) => {
-  const response = await fetch(`/api/reminders/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to update reminder');
-  }
-
-  return response.json();
-};
-
-export const useUpdateReminder = () => {
+const useUpdateReminder = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateReminder,
+    mutationFn: async (reminder: Reminder) => {
+      const token = await getAccessTokenSilently();
+
+      const res = await fetch(
+        `http://localhost:5000/api/reminders/${reminder.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(reminder),
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to update application");
+      }
+
+      return res.json();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reminders'] });
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
     },
   });
 };
+
+export default useUpdateReminder;
