@@ -65,13 +65,15 @@ const ReminderModal = ({ isOpen, onClose, reminder }: ReminderModalProps) => {
     e.preventDefault();
     if (!reminder) return;
 
-    try {
-      await updateReminder.mutateAsync(formData);
-      toast.success("Application succesfully updated!");
-    } catch (error) {
-      console.error("Failed to update application", error);
-      toast.error("Failed to update application");
-    }
+    updateReminder.mutate(formData, {
+      onSuccess: () => {
+        toast.success("Application succesfully updated!");
+        onClose();
+      },
+      onError: (err) => {
+        toast.success("Failed to update application");
+      },
+    });
   };
 
   return (
@@ -109,8 +111,13 @@ const ReminderModal = ({ isOpen, onClose, reminder }: ReminderModalProps) => {
           type="submit"
           className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          Save
+          {updateReminder.isPending ? "Saving..." : "Save Reminder"}
         </button>
+        {updateReminder.isError && (
+          <p className="text-red-600 mt-2 text-sm">
+            ⚠ An error occurred when saving your application. Try again!
+          </p>
+        )}
       </form>
     </Modal>
   );

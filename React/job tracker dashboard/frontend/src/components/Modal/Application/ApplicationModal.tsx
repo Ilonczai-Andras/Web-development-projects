@@ -116,7 +116,7 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
           className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
           disabled={createApplication.isPending}
         >
-          {createApplication.isPending ? "Mentés..." : "Save Application"}
+          {createApplication.isPending ? "Saving..." : "Save Application"}
         </button>
         {createApplication.isError && (
           <p className="text-red-600 mt-2 text-sm">
