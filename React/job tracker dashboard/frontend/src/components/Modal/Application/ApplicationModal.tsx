@@ -1,8 +1,8 @@
-import Modal from "./Modal";
+import Modal from "../Modal";
 import { useState } from "react";
 import useCreateApplication, {
   ApplicationData,
-} from "../../hooks/Application/useCreateApplication";
+} from "../../../hooks/Application/useCreateApplication";
 import { toast } from "react-hot-toast";
 
 interface ApplicationModalProps {

@@ -1,5 +1,4 @@
 import ReminderList from "../Reminder/ReminderList";
-import ReminderForm from "../Reminder/ReminderForm";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const ReminderView = () => {
@@ -9,8 +8,7 @@ const ReminderView = () => {
 
   return (
     <div className="space-y-6 p-4">
-      <h2 className="text-xl font-semibold">Emlékeztetők kezelése</h2>
-      <ReminderForm />
+      <h2 className="text-xl font-semibold">Managing reminders</h2>
       <ReminderList />
     </div>
   );

@@ -1,38 +1,39 @@
-import { useEffect, useState } from "react";
+import { useReminders } from "../../hooks/Reminder/useGetReminders";
+import { Spinner } from "../Spinner";
 
 const ReminderList = () => {
-  const [reminders, setReminders] = useState<any[]>([]);
+  const { data: reminders = [], isLoading, error } = useReminders();
 
-  useEffect(() => {
-    fetch("/api/reminders")
-      .then((res) => res.json())
-      .then((data) => setReminders(data))
-  }, []);
-
-  const deleteReminder = (id: number) => {
-    fetch(`/api/reminders/${id}`, { method: "DELETE" })
-      .then(() => {
-        setReminders(reminders.filter((r) => r.id !== id));
-      })
-      .catch(() => alert("Törlés sikertelen!"));
-  };
+  if (isLoading) return <Spinner />;
+  if (error)
+    return (
+      <div className="text-center text-red-600 py-4">
+        ⚠ An error occurred when loading data. Please try again later.
+      </div>
+    );
 
   return (
     <div>
       {reminders.map((reminder) => (
-        <div key={reminder.id} className="border rounded p-4 mb-2">
-          <h3 className="text-lg font-semibold">{reminder.title}</h3>
-          <p>{reminder.description}</p>
-          <p className="text-sm text-gray-500">
-            Emlékeztető dátuma:{" "}
-            {new Date(reminder.reminder_date).toLocaleString()}
-          </p>
-          <button
-            onClick={() => deleteReminder(reminder.id)}
-            className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-          >
-            Törlés
-          </button>
+        <div
+          key={reminder.id}
+          className="border rounded p-4 mb-2 flex justify-between items-start bg-gray-900"
+        >
+          <div>
+            <h3 className="text-lg font-semibold text-white">{reminder.title}</h3>
+            <p className="text-white">{reminder.description}</p>
+            <p className="text-sm text-white">
+              Reminder date: {new Date(reminder.remind_at).toLocaleString()}
+            </p>
+          </div>
+          <div className="flex flex-col items-end ml-4">
+            <button className="m-1 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+              Delete
+            </button>
+            <button className="m-1 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+              Update
+            </button>
+          </div>
         </div>
       ))}
     </div>

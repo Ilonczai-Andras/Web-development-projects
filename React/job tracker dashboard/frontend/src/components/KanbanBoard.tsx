@@ -57,7 +57,7 @@ export const KanbanBoard = () => {
   if (error)
     return (
       <div className="text-center text-red-600 py-4">
-        ⚠ Hiba történt az adatok betöltésekor. Kérlek próbáld újra később.
+        ⚠ An error occurred when loading data. Please try again later.
       </div>
     );
 

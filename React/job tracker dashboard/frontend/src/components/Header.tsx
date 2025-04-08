@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import ApplicationModal from "./Modal/ApplicationModal";
+import ApplicationModal from "./Modal/Application/ApplicationModal";
 import UserMenu from "./UserMenu";
 import { useEffect, useState } from "react";
 
