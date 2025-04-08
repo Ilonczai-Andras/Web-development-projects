@@ -1,34 +1,36 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-interface Reminder {
-  title: string;
-  description?: string;
-  reminder_date: Date;
-}
-
-const createReminder = async (data: Reminder) => {
-  const response = await fetch('/api/reminders', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to create reminder');
-  }
-
-  return response.json();
-};
+import { Reminder } from "./useGetReminders";
+import { useAuth0 } from '@auth0/auth0-react';
 
 export const useCreateReminder = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createReminder,
+    mutationFn: async (data: Reminder) => {
+      const token = await getAccessTokenSilently();
+
+      const response = await fetch("http://localhost:5000/api/reminders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create reminder");
+      }
+
+      const result = await response.json();
+      console.log("[API] Reminder created:", result);
+      return result;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reminders'] });
     },
   });
 };
+
+export default useCreateReminder;
