@@ -15,7 +15,6 @@ const UserMenu = () => {
     return localStorage.getItem(LOCAL_STORAGE_KEY) || "board";
   });
 
-  // Update localStorage when location changes
   useEffect(() => {
     const path = location.pathname;
     if (path.includes("reminders")) {
@@ -58,23 +57,27 @@ const UserMenu = () => {
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10">
           <div className="flex flex-col p-2 space-y-2">
-            {viewMode === "board" && (
-              <Link
-                to="/reminders"
-                className="text-left hover:bg-gray-100 p-2 rounded transition-colors text-black"
-                onClick={() => setOpen(false)}
-              >
-                Emlékeztetők
-              </Link>
-            )}
-            {viewMode === "reminders" && (
-              <Link
-                to="/board"
-                className="text-left hover:bg-gray-100 p-2 rounded transition-colors text-black"
-                onClick={() => setOpen(false)}
-              >
-                Kanban board
-              </Link>
+            {isAuthenticated && (
+              <>
+                {viewMode === "board" && (
+                  <Link
+                    to="/reminders"
+                    className="text-left hover:bg-gray-100 p-2 rounded transition-colors text-black"
+                    onClick={() => setOpen(false)}
+                  >
+                    Emlékeztetők
+                  </Link>
+                )}
+                {viewMode === "reminders" && (
+                  <Link
+                    to="/board"
+                    className="text-left hover:bg-gray-100 p-2 rounded transition-colors text-black"
+                    onClick={() => setOpen(false)}
+                  >
+                    Kanban board
+                  </Link>
+                )}
+              </>
             )}
 
             <hr />
