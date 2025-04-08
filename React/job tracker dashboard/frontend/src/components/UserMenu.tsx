@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const LOCAL_STORAGE_KEY = "view-mode";
@@ -15,6 +15,8 @@ const UserMenu = () => {
     return localStorage.getItem(LOCAL_STORAGE_KEY) || "board";
   });
 
+  const menuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const path = location.pathname;
     if (path.includes("reminders")) {
@@ -26,8 +28,21 @@ const UserMenu = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative">
+    <div ref={menuRef} className="relative">
       <button
         onClick={() => setOpen(!open)}
         className="h-10 px-4 flex items-center gap-2 bg-white text-gray-800 rounded-lg shadow hover:bg-gray-100 transition-colors"
@@ -65,7 +80,7 @@ const UserMenu = () => {
                     className="text-left hover:bg-gray-100 p-2 rounded transition-colors text-black"
                     onClick={() => setOpen(false)}
                   >
-                    Emlékeztetők
+                    Reminders
                   </Link>
                 )}
                 {viewMode === "reminders" && (
