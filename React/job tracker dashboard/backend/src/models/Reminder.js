@@ -35,6 +35,7 @@ const updateReminder = async (id, fields) => {
 
 const deleteReminder = async (id) => {
     await db.query(`DELETE FROM reminders WHERE id = $1`, [id]);
+    return { success: true };
 };
 
 module.exports = {

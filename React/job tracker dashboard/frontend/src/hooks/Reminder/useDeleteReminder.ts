@@ -20,7 +20,7 @@ const useDeleteReminder = () => {
         throw new Error('Failed to delete reminder');
       }
 
-      return await response.json();
+      return true;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reminders'] });
