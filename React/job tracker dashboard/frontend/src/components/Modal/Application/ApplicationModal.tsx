@@ -3,6 +3,7 @@ import { useState } from "react";
 import useCreateApplication, {
   ApplicationData,
 } from "../../../hooks/Application/useCreateApplication";
+import useCreateReminder from "../../../hooks/Reminder/useCreateReminder";
 import { toast } from "react-hot-toast";
 
 interface ApplicationModalProps {
@@ -21,6 +22,7 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
   });
 
   const createApplication = useCreateApplication();
+  const createReminder = useCreateReminder();
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -37,8 +39,20 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
     e.preventDefault();
 
     createApplication.mutate(formData, {
-      onSuccess: () => {
+      onSuccess: (newApp) => {
         toast.success("Application successfully saved!");
+
+        // Reminder létrehozása az alkalmazás határidejével
+      if (newApp.deadline) {
+        createReminder.mutate({
+          id: newApp.id,
+          application_id: newApp.id,
+          title: newApp.title,
+          description: newApp.description,
+          remind_at: newApp.deadline,
+          is_sent: false,
+        });
+      }
         onClose();
       },
       onError: (err) => {
