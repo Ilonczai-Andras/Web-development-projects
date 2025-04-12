@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useReminders } from "../../hooks/Reminder/useGetReminders";
+import useDeleteReminder from "../../hooks/Reminder/useDeleteReminder";
 import ReminderModal from "../Modal/Reminder/ReminderModal";
 import { Spinner } from "../Spinner";
 import { Reminder } from "../../hooks/Reminder/useGetReminders";
@@ -10,6 +11,7 @@ const ReminderList = () => {
   const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(
     null
   );
+  const deleteReminder = useDeleteReminder();
 
   if (isLoading) return <Spinner />;
   if (error)
@@ -41,9 +43,13 @@ const ReminderList = () => {
             </p>
           </div>
           <div className="flex flex-col items-end ml-4">
-            <button className="m-1 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+            <button
+              onClick={() => deleteReminder.mutate(reminder.id)}
+              className="m-1 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+            >
               Delete
             </button>
+
             <button
               onClick={() => openModal(reminder)}
               className="m-1 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
