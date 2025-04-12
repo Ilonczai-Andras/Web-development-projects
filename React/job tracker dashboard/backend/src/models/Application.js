@@ -8,9 +8,19 @@ const Application = {
 
     async createApplication(profileId, data) {
         const result = await db.query(
-            'INSERT INTO applications (profile_id, title, company, status) VALUES ($1, $2, $3, $4) RETURNING *',
-            [profileId, data.title, data.company, data.status]
-        );
+            `INSERT INTO applications (profile_id, title, company, status, description, link, deadline)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
+             RETURNING *`,
+            [
+              profileId,
+              data.title,
+              data.company,
+              data.status,
+              data.description || null,
+              data.link || null,
+              data.deadline || null
+            ]
+          );          
         return result.rows[0];
     },
 
