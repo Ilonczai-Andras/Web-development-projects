@@ -24,7 +24,6 @@ export const useCreateReminder = () => {
       }
 
       const result = await response.json();
-      console.log("[API] Reminder created:", result);
       return result;
     },
     onSuccess: () => {

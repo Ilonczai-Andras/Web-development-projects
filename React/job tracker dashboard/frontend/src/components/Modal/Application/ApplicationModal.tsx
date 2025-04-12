@@ -42,28 +42,39 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
       onSuccess: (newApp) => {
         toast.success("Application successfully saved!");
 
-        // Reminder létrehozása az alkalmazás határidejével
-      if (newApp.deadline) {
-        createReminder.mutate({
-          id: newApp.id,
-          application_id: newApp.id,
-          title: newApp.title,
-          description: newApp.description,
-          remind_at: newApp.deadline,
-          is_sent: false,
-        });
-      }
+        if (newApp.deadline) {
+          createReminder.mutate(
+            {
+              id: newApp.id,
+              application_id: newApp.id,
+              title: newApp.title,
+              description: newApp.description,
+              remind_at: newApp.deadline,
+              is_sent: false,
+            },
+            {
+              onSuccess: () => {
+                toast.success("Reminder successfully saved!!");
+                onClose();
+              },
+              onError: (err) => {
+                toast.success("❌ An error occurred when saving your Reminder.");
+              },
+            }
+          );
+        }
+
         onClose();
       },
-      onError: (err) => {
-        toast.success("❌ An error occurred when saving your application.");
+      onError: () => {
+        toast.error("❌ An error occurred when saving your application.");
       },
     });
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl mb-4 ">New Application</h2>
+      <h2 className="text-xl mb-4">New Application</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
           name="title"
@@ -119,10 +130,11 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
 
         <input
           name="deadline"
-          type="date"
+          type="datetime-local"
           value={formData.deadline}
           onChange={handleChange}
           className="w-full border px-3 py-2 rounded text-black"
+          required
         />
 
         <button
@@ -132,6 +144,7 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
         >
           {createApplication.isPending ? "Saving..." : "Save Application"}
         </button>
+
         {createApplication.isError && (
           <p className="text-red-600 mt-2 text-sm">
             ⚠ An error occurred when saving your application. Try again!

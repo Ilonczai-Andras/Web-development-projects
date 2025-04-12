@@ -32,7 +32,6 @@ export const useCreateApplication = () => {
       }
 
       const result = await response.json();
-      console.log("[API] Application created:", result);
       return result;
     },
     onSuccess: () => {
