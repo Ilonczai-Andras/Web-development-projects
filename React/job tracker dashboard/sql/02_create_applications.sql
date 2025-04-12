@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS applications (
     company VARCHAR(255),
     status VARCHAR(50) NOT NULL,
     link TEXT,
-    deadline DATE,
+    deadline TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
