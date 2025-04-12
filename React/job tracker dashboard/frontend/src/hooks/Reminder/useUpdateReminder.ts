@@ -29,7 +29,7 @@ const useUpdateReminder = () => {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applications"] });
+      queryClient.invalidateQueries({ queryKey: ["reminders"] });
     },
   });
 };
