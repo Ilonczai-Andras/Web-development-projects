@@ -34,13 +34,16 @@ const ReminderModal = ({ isOpen, onClose, reminder }: ReminderModalProps) => {
     description: "",
     remind_at: "",
     is_sent: false,
+    notification_offset: 0,
   });
 
   useEffect(() => {
     if (reminder) {
-      const { id, application_id, title, description, remind_at, is_sent } = reminder;
+      const { id, application_id, title, description, remind_at, is_sent } =
+        reminder;
 
       setFormData({
+        notification_offset: reminder.notification_offset || 0,
         id,
         application_id,
         title: title || "",
@@ -52,12 +55,17 @@ const ReminderModal = ({ isOpen, onClose, reminder }: ReminderModalProps) => {
   }, [reminder]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "application_id" ? Number(value) : value,
+      [name]:
+        name === "application_id" || name === "notification_offset"
+          ? Number(value)
+          : value,
     }));
   };
 
@@ -84,8 +92,14 @@ const ReminderModal = ({ isOpen, onClose, reminder }: ReminderModalProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white p-6 rounded shadow-md w-full max-w-md"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2 className="text-xl mb-4 text-black">Editing a reminder</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -110,6 +124,19 @@ const ReminderModal = ({ isOpen, onClose, reminder }: ReminderModalProps) => {
             className="w-full border px-3 py-2 rounded text-black"
             required
           />
+          <select
+            name="notification_offset"
+            value={formData.notification_offset}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded text-black"
+          >
+            <option value={0}>At the time of the event</option>
+            <option value={15}>15 minutes before</option>
+            <option value={60}>1 hour before</option>
+            <option value={360}>6 hours before</option>
+            <option value={1440}>1 day before</option>
+          </select>
+
           <div className="flex justify-end gap-4">
             <button
               type="submit"

@@ -6,6 +6,7 @@ export interface Reminder {
     description?: string;
     remind_at: string;
     is_sent: boolean;
+    notification_offset: number;
     created_at: string;
     updated_at: string;
   }
@@ -17,6 +18,7 @@ export interface Reminder {
     description?: string;
     remind_at: string;
     is_sent: boolean;
+    notification_offset: number;
   };
   
   // Frissítéshez:

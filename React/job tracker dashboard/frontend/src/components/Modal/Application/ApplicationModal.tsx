@@ -49,6 +49,7 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
               description: newApp.description,
               remind_at: newApp.deadline,
               is_sent: false,
+              notification_offset: 0,
             },
             {
               onSuccess: () => {
