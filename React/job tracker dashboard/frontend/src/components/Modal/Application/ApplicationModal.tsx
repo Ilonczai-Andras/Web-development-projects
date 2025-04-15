@@ -1,8 +1,7 @@
 import Modal from "../Modal";
 import { useState } from "react";
-import useCreateApplication, {
-  ApplicationData,
-} from "../../../hooks/Application/useCreateApplication";
+import useCreateApplication from "../../../hooks/Application/useCreateApplication";
+import { ApplicationCreateInput } from "../../../hooks/Application/types";
 import useCreateReminder from "../../../hooks/Reminder/useCreateReminder";
 import { toast } from "react-hot-toast";
 
@@ -12,7 +11,7 @@ interface ApplicationModalProps {
 }
 
 const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
-  const [formData, setFormData] = useState<ApplicationData>({
+  const [formData, setFormData] = useState<ApplicationCreateInput>({
     title: "",
     description: "",
     company: "",

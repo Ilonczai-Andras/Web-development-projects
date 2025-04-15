@@ -4,10 +4,8 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { useState, useEffect } from "react";
 import { Column } from "./Column";
 import { Card } from "./Card/Card";
-import {
-  Application,
-  useApplications,
-} from "../hooks/Application/useGetApplications";
+import { useApplications } from "../hooks/Application/useGetApplications";
+import { Application } from "../hooks/Application/types";
 import useUpdateApplication from "../hooks/Application/useUpdateApplication";
 import { Spinner } from "./Spinner";
 import { toast } from "react-hot-toast";
@@ -173,7 +171,12 @@ export const KanbanBoard = () => {
 
     // ✅ Save to backend
     try {
-      await updateApplication.mutateAsync(updatedCard);
+      const { id, ...rest } = updatedCard;
+
+      await updateApplication.mutateAsync({
+        id,
+        data: rest,
+      });
       toast.success("Application succesfully updated!");
     } catch (error) {
       console.error("Failed to update application", error);

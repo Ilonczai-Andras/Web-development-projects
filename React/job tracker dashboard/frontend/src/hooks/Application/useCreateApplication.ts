@@ -1,21 +1,13 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ApplicationCreateInput } from "./types";
 
-export type ApplicationData = {
-  title: string;
-  description: string;
-  company: string;
-  status: "todo" | "inprogress" | "interview" | "done";
-  link: string;
-  deadline: string;
-};
-
-export const useCreateApplication = () => {
+const useCreateApplication = () => {
   const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: ApplicationData) => {
+    mutationFn: async (data: ApplicationCreateInput) => {
       const token = await getAccessTokenSilently();
 
       const response = await fetch("http://localhost:5000/api/applications", {
@@ -31,8 +23,7 @@ export const useCreateApplication = () => {
         throw new Error("Failed to create application");
       }
 
-      const result = await response.json();
-      return result;
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
