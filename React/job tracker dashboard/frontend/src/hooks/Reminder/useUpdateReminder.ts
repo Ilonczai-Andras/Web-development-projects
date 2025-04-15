@@ -1,29 +1,29 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Reminder } from "./useGetReminders";
+import { ReminderUpdateInput } from "./types";
 import { useAuth0 } from '@auth0/auth0-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const useUpdateReminder = () => {
   const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (reminder: Reminder) => {
+    mutationFn: async ({ id, data }: ReminderUpdateInput) => {
       const token = await getAccessTokenSilently();
 
       const res = await fetch(
-        `http://localhost:5000/api/reminders/${reminder.id}`,
+        `http://localhost:5000/api/reminders/${id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(reminder),
+          body: JSON.stringify(data),
         }
       );
 
       if (!res.ok) {
-        throw new Error("Failed to update application");
+        throw new Error("Failed to update reminder");
       }
 
       return res.json();

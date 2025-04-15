@@ -1,5 +1,5 @@
-import { useAuth0 } from '@auth0/auth0-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const useDeleteReminder = () => {
   const queryClient = useQueryClient();

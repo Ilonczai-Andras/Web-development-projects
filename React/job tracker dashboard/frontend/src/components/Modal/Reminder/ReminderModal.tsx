@@ -1,8 +1,10 @@
-import Modal from "../Modal";
 import { useState, useEffect } from "react";
 import useUpdateReminder from "../../../hooks/Reminder/useUpdateReminder";
-import { Reminder } from "../../../hooks/Reminder/useGetReminders";
 import toast from "react-hot-toast";
+import { Reminder } from "../../../hooks/Reminder/types";
+import { ReminderCreateInput } from "../../../hooks/Reminder/types";
+
+type ReminderFormData = ReminderCreateInput & { id: number };
 
 interface ReminderModalProps {
   isOpen: boolean;
@@ -24,21 +26,19 @@ const formatDateForInput = (value: string): string => {
 };
 
 const ReminderModal = ({ isOpen, onClose, reminder }: ReminderModalProps) => {
-  const [formData, setFormData] = useState({
+  const updateReminder = useUpdateReminder();
+  const [formData, setFormData] = useState<ReminderFormData>({
     id: 0,
-    application_id: 0,
+    application_id: null,
     title: "",
     description: "",
     remind_at: "",
     is_sent: false,
   });
 
-  const updateReminder = useUpdateReminder();
-
   useEffect(() => {
     if (reminder) {
-      const { id, application_id, title, description, remind_at, is_sent } =
-        reminder;
+      const { id, application_id, title, description, remind_at, is_sent } = reminder;
 
       setFormData({
         id,
@@ -57,69 +57,77 @@ const ReminderModal = ({ isOpen, onClose, reminder }: ReminderModalProps) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "application_id" ? Number(value) : value,
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!reminder) return;
 
-    updateReminder.mutate(formData, {
-      onSuccess: () => {
-        toast.success("Application succesfully updated!");
-        onClose();
-      },
-      onError: (err) => {
-        toast.success("Failed to update application");
-      },
-    });
+    const { id, ...data } = formData;
+
+    updateReminder.mutate(
+      { id, data },
+      {
+        onSuccess: () => {
+          toast.success("Reminder successfully updated!");
+          onClose();
+        },
+        onError: () => {
+          toast.error("Failed to update reminder");
+        },
+      }
+    );
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl mb-4 text-white">Editing a reminder</h2>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          name="title"
-          type="text"
-          placeholder="Title"
-          value={formData.title}
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded text-black"
-          required
-        />
-
-        <textarea
-          name="description"
-          placeholder="Description (optional)"
-          value={formData.description}
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded text-black"
-        />
-
-        <input
-          name="remind_at"
-          type="datetime-local"
-          value={formData.remind_at}
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded text-black"
-          required
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-        >
-          {updateReminder.isPending ? "Saving..." : "Save Reminder"}
-        </button>
-        {updateReminder.isError && (
-          <p className="text-red-600 mt-2 text-sm">
-            ⚠ An error occurred when saving your application. Try again!
-          </p>
-        )}
-      </form>
-    </Modal>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>
+      <div className="bg-white p-6 rounded shadow-md w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-xl mb-4 text-black">Editing a reminder</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="title"
+            type="text"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded text-black"
+            required
+          />
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded text-black"
+          />
+          <input
+            name="remind_at"
+            type="datetime-local"
+            value={formData.remind_at}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded text-black"
+            required
+          />
+          <div className="flex justify-end gap-4">
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-black text-white border border-white px-4 py-2 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 

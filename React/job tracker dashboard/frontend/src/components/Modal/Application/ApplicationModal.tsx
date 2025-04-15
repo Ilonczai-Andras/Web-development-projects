@@ -44,7 +44,6 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
         if (newApp.deadline) {
           createReminder.mutate(
             {
-              id: newApp.id,
               application_id: newApp.id,
               title: newApp.title,
               description: newApp.description,
@@ -56,8 +55,8 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
                 toast.success("Reminder successfully saved!!");
                 onClose();
               },
-              onError: (err) => {
-                toast.success("❌ An error occurred when saving your Reminder.");
+              onError: () => {
+                toast.error("❌ An error occurred when saving your Reminder.");
               },
             }
           );

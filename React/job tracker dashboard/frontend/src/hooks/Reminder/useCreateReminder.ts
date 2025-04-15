@@ -1,13 +1,13 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Reminder } from "./useGetReminders";
+import {ReminderCreateInput} from "./types";
 import { useAuth0 } from '@auth0/auth0-react';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useCreateReminder = () => {
   const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: Reminder) => {
+    mutationFn: async (data: ReminderCreateInput) => {
       const token = await getAccessTokenSilently();
 
       const response = await fetch("http://localhost:5000/api/reminders", {
@@ -23,8 +23,7 @@ export const useCreateReminder = () => {
         throw new Error("Failed to create reminder");
       }
 
-      const result = await response.json();
-      return result;
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reminders'] });

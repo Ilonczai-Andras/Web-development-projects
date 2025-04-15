@@ -3,7 +3,7 @@ import { useReminders } from "../../hooks/Reminder/useGetReminders";
 import useDeleteReminder from "../../hooks/Reminder/useDeleteReminder";
 import ReminderModal from "../Modal/Reminder/ReminderModal";
 import { Spinner } from "../Spinner";
-import { Reminder } from "../../hooks/Reminder/useGetReminders";
+import { Reminder } from "../../hooks/Reminder/types";
 
 const ReminderList = () => {
   const { data: reminders = [], isLoading, error } = useReminders();
