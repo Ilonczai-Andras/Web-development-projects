@@ -1,11 +1,11 @@
 const db = require('../config/db');
 
-const createReminder = async ({ user_id, application_id, title, description, remind_at }) => {
+const createReminder = async ({ user_id, application_id, title, description, remind_at, notification_offset, send_at }) => {
     const { rows } = await db.query(
-        `INSERT INTO reminders (user_id, application_id, title, description, remind_at)
-         VALUES ($1, $2, $3, $4, $5)
-         RETURNING *`,
-        [user_id, application_id, title, description, remind_at]
+        `INSERT INTO reminders (user_id, application_id, title, description, remind_at, notification_offset, send_at) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *`,
+        [user_id, application_id, title, description, remind_at, notification_offset, send_at]
     );
     return rows[0];
 };
@@ -24,11 +24,19 @@ const getReminderById = async (id) => {
 };
 
 const updateReminder = async (id, fields) => {
-    const { title, description, remind_at } = fields;
+    const { title, description, remind_at, notification_offset, send_at} = fields;
     const { rows } = await db.query(
-        `UPDATE reminders SET title = $1, description = $2, remind_at = $3, updated_at = NOW()
-         WHERE id = $4 RETURNING *`,
-        [title, description, remind_at, id]
+        `UPDATE reminders
+        SET
+        title = $1,
+        description = $2,
+        remind_at = $3,
+        notification_offset = $4,
+        send_at = $5,
+        updated_at = NOW()
+        WHERE id = $6
+        RETURNING *`,
+        [title, description, remind_at, notification_offset, send_at, id]
     );
     return rows[0];
 };
