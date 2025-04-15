@@ -9,10 +9,17 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicHome from "./components/PublicHome"; // új
+import { useEffect } from "react";
 
 function App() {
   const mutation = useCreateOrUpdateProfile();
   const { isLoading: isAuthLoading, isAuthenticated } = useAuth0();
+
+  useEffect(() => {
+    if (!isAuthLoading && isAuthenticated && mutation.status === "idle") {
+      mutation.mutate();
+    }
+  }, [isAuthLoading, isAuthenticated, mutation]);
 
   if (mutation.isPending || isAuthLoading) return <Spinner />;
 

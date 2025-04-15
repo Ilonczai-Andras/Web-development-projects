@@ -10,7 +10,6 @@ exports.createOrUpdateProfile = async (req, res, next) => {
         }
 
         const profile = await profileService.createOrUpdateProfile({ auth0_id, name, email, picture });
-        console.log(`[PROFILE] Profile created/updated for user ${auth0_id}`);
         res.json(profile);
     } catch (err) {
         next(err);

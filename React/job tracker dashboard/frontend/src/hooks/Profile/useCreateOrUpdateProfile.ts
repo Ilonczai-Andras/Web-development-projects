@@ -1,37 +1,36 @@
-import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation } from "@tanstack/react-query";
-
-const createOrUpdateProfile = async (token: string) => {
-    const res = await fetch('http://localhost:5000/api/profiles', {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-
-  if (!res.ok) {
-    throw new Error("Failed to create or update profile");
-  }
-
-  return res.json();
-};
+import { ProfileCreateInput } from "./types";
 
 const useCreateOrUpdateProfile = () => {
-  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
 
-  const mutation = useMutation({
-    mutationFn: async () => {
+  return useMutation({
+    mutationFn: async (): Promise<void> => {
       const token = await getAccessTokenSilently();
-      return createOrUpdateProfile(token);
+
+      const profileData: ProfileCreateInput = {
+        auth0_id: user?.sub || "",
+        name: user?.name || "",
+        email: user?.email || "",
+        picture: user?.picture || "",
+      };
+
+      const res = await fetch("http://localhost:5000/api/profiles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to create or update profile");
+      }
     },
   });
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      mutation.mutate();
-    }
-    // eslint-disable-next-line
-  }, [isAuthenticated]);
-
-  return mutation;
 };
 
 export default useCreateOrUpdateProfile;
