@@ -19,6 +19,7 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
     link: "",
     deadline: "",
   });
+  const [notificationOffset, setNotificationOffset] = useState(0);
 
   const createApplication = useCreateApplication();
   const createReminder = useCreateReminder();
@@ -54,7 +55,7 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
               description: newApp.description,
               remind_at: remindUTC.toISOString(),
               is_sent: false,
-              notification_offset: 0,
+              notification_offset: notificationOffset,
             },
             {
               onSuccess: () => {
@@ -140,6 +141,20 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
           className="w-full border px-3 py-2 rounded text-black"
           required
         />
+        <label className="block text-sm font-medium text-gray-700">
+          When should we notify you?
+        </label>
+        <select
+          value={notificationOffset}
+          onChange={(e) => setNotificationOffset(Number(e.target.value))}
+          className="w-full border px-3 py-2 rounded text-black"
+        >
+          <option value={0}>At the time of the event</option>
+          <option value={15}>15 minutes before</option>
+          <option value={60}>1 hour before</option>
+          <option value={360}>6 hours before</option>
+          <option value={1440}>1 day before</option>
+        </select>
 
         <button
           type="submit"
