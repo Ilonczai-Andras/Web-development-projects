@@ -12,7 +12,7 @@ const createReminder = async ({ user_id, application_id, title, description, rem
 
 const getRemindersByUserId = async (user_id) => {
     const { rows } = await db.query(
-        `SELECT * FROM reminders WHERE user_id = $1 ORDER BY remind_at ASC`,
+        `SELECT * FROM reminders WHERE user_id = $1 AND is_sent = false ORDER BY remind_at ASC`,
         [user_id]
     );
     return rows;
