@@ -42,12 +42,17 @@ const ApplicationModal = ({ isOpen, onClose }: ApplicationModalProps) => {
         toast.success("Application successfully saved!");
 
         if (newApp.deadline) {
+          const remindLocal = new Date(newApp.deadline);
+          const remindUTC = new Date(
+            remindLocal.getTime() - remindLocal.getTimezoneOffset() * 60000
+          );
+
           createReminder.mutate(
             {
               application_id: newApp.id,
               title: newApp.title,
               description: newApp.description,
-              remind_at: newApp.deadline,
+              remind_at: remindUTC.toISOString(),
               is_sent: false,
               notification_offset: 0,
             },
