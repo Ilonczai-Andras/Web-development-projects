@@ -2,6 +2,8 @@ const cron = require('node-cron');
 const logger = require('../utils/logger');
 const db = require('../config/db');
 const nodemailer = require('nodemailer');
+const { format } = require("date-fns");
+const { marked } = require("marked");
 
 logger.cron('🟢 reminderJob.js betöltődött és fut.');
 
@@ -23,6 +25,21 @@ const verifyEmailConnection = async () => {
     }
 };
 
+function getReminderMarkdown(reminder) {
+    const formattedDate = format(new Date(reminder.remind_at), "MMMM d, yyyy 'at' HH:mm");
+  
+    return `## 🔔 Reminder: _${reminder.title}_
+  
+  ${reminder.description ? `**Details:**  \n${reminder.description}\n` : ""}
+  📅 **When:** ${formattedDate}
+  
+  ---
+  
+  Don't forget to prepare!  
+  -Job Tracker
+  `;
+  }
+
 verifyEmailConnection();
 
 const sendReminders = async () => {
@@ -36,11 +53,12 @@ const sendReminders = async () => {
 
         for (const reminder of reminders) {
             // E-mail küldése (vagy más értesítés)
+            const markdownBody = getReminderMarkdown(reminder);
             await transporter.sendMail({
-                from: `"Job Tracker" <${process.env.EMAIL_USER}>`,
                 to: reminder.email,
-                subject: `🔔 Emlékeztető: ${reminder.title}`,
-                text: reminder.description || 'Ne felejtsd el a feladatodat!'
+                subject: `Reminder: ${reminder.title}`,
+                text: markdownBody,
+                html: marked(markdownBody),  
             });
 
             // is_sent frissítése
