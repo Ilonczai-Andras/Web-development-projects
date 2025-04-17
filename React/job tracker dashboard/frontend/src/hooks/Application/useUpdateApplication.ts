@@ -9,8 +9,9 @@ const useUpdateApplication = () => {
   return useMutation({
     mutationFn: async ({ id, data }: ApplicationUpdateInput) => {
       const token = await getAccessTokenSilently();
+      const baseUrl = process.env.REACT_APP_API_URL;
 
-      const response = await fetch(`http://localhost:5000/api/applications/${id}`, {
+      const response = await fetch(`${baseUrl}/api/applications/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -16,7 +16,8 @@ const useCreateOrUpdateProfile = () => {
         picture: user?.picture || "",
       };
 
-      const res = await fetch("http://localhost:5000/api/profiles", {
+      const baseUrl = process.env.REACT_APP_API_URL;
+      const res = await fetch(`${baseUrl}/api/profiles`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

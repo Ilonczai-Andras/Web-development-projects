@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
 
 const fetchReminders = async (token: string): Promise<Reminder[]> => {
-  const res = await fetch("http://localhost:5000/api/reminders", {
+  const baseUrl = process.env.REACT_APP_API_URL;
+  const res = await fetch(`${baseUrl}/api/reminders`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

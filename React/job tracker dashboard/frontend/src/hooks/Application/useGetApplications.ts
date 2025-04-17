@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Application } from "./types";
 
 const fetchApplications = async (token: string): Promise<Application[]> => {
-  const res = await fetch("http://localhost:5000/api/applications", {
+  const baseUrl = process.env.REACT_APP_API_URL;
+  const res = await fetch(`${baseUrl}/api/applications`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

@@ -8,8 +8,9 @@ const useDeleteReminder = () => {
   return useMutation({
     mutationFn: async (id: number) => {
       const token = await getAccessTokenSilently();
+      const baseUrl = process.env.REACT_APP_API_URL;
 
-      const response = await fetch(`http://localhost:5000/api/reminders/${id}`, {
+      const response = await fetch(`${baseUrl}/api/reminders/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

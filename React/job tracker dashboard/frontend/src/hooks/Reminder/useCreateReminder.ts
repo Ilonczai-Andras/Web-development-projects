@@ -9,8 +9,9 @@ export const useCreateReminder = () => {
   return useMutation({
     mutationFn: async (data: ReminderCreateInput) => {
       const token = await getAccessTokenSilently();
+      const baseUrl = process.env.REACT_APP_API_URL;
 
-      const response = await fetch("http://localhost:5000/api/reminders", {
+      const response = await fetch(`${baseUrl}/api/reminders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

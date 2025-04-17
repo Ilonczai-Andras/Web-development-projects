@@ -9,9 +9,10 @@ const useUpdateReminder = () => {
   return useMutation({
     mutationFn: async ({ id, data }: ReminderUpdateInput) => {
       const token = await getAccessTokenSilently();
+      const baseUrl = process.env.REACT_APP_API_URL;
 
       const res = await fetch(
-        `http://localhost:5000/api/reminders/${id}`,
+        `${baseUrl}/api/reminders/${id}`,
         {
           method: "PUT",
           headers: {
